@@ -64,3 +64,25 @@ export async function getNews(ticker) {
     throw new Error("Failed to fetch news");
   }
 }
+
+export async function getMarketContext() {
+  try {
+    const spy = await axios.get(
+      `https://finnhub.io/api/v1/quote?symbol=SPY&token=${API_KEY}`
+    );
+
+    const qqq = await axios.get(
+      `https://finnhub.io/api/v1/quote?symbol=QQQ&token=${API_KEY}`
+    );
+
+    return {
+      spyChange: spy.data.dp,
+      qqqChange: qqq.data.dp
+    };
+  } catch (err) {
+    return {
+      spyChange: null,
+      qqqChange: null
+    };
+  }
+}
