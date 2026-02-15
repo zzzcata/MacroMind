@@ -4,9 +4,11 @@ AI-powered market move explainer.
 
 Enter a stock ticker and receive a structured explanation of why the stock moved based on price data, market context, and recent news.
 
-Live demo:
+Live UI:  
+https://macro-mind.netlify.app/
+
+Live API example:  
 https://macromind-api-3edn.onrender.com/analyze?ticker=AAPL
-macro-mind.netlify.app/
 
 ## Features
 
