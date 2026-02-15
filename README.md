@@ -4,6 +4,9 @@ AI-powered market move explainer.
 
 Enter a stock ticker and receive a structured explanation of why the stock moved based on price data, market context, and recent news.
 
+Live demo:
+https://macromind-api-3edn.onrender.com/analyze?ticker=AAPL
+
 ## Features
 
 - Real-time stock data (price, % move, volume context)
