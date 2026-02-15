@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import { getQuote, getNews, getMarketContext } from "./finnhub.js";
 import { explainMove } from "./ai.js";
 import { buildReasoningContext } from "./reasoning.js";
@@ -6,6 +7,8 @@ import { buildEvidence } from "./evidence.js";
 import { getCached, setCached } from "./cache.js";
 
 const app = express();
+app.use(cors());
+
 const PORT = 3000;
 
 // Health check
