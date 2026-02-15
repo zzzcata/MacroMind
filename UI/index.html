@@ -5,9 +5,7 @@
 <title>MacroMind</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin:0;
@@ -172,6 +170,14 @@ Hybrid intelligence · AI + deterministic reasoning
 </div>
 
 <script>
+
+// ENTER key support
+document.getElementById("ticker").addEventListener("keydown", function(e){
+  if(e.key === "Enter"){
+    analyze();
+  }
+});
+
 async function analyze() {
   const ticker = document.getElementById("ticker").value.trim().toUpperCase();
   const resultDiv = document.getElementById("result");
@@ -200,10 +206,16 @@ async function analyze() {
 
     const i = data.interpretation;
 
+    const priceFormatted = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD"
+    }).format(data.facts.price);
+
     let html = `
       <div class="card">
         <div class="tickerline">
-          <b>${data.request.ticker}</b> — ${data.facts.price} (${data.facts.pct_change_1d.toFixed(2)}%)
+          <b>${data.request.ticker}</b> — ${priceFormatted} 
+          (${data.facts.pct_change_1d.toFixed(2)}%)
           <span class="confidence">${i.confidence.level} confidence</span>
         </div>
 
