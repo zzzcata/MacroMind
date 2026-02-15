@@ -7,6 +7,31 @@ if (!API_KEY) {
   throw new Error("Missing FINNHUB_API_KEY in .env");
 }
 
+// --------------------------------------------------
+// SEARCH TICKER BY COMPANY NAME
+// --------------------------------------------------
+export async function searchTicker(query) {
+  try {
+    const res = await axios.get(
+      `https://finnhub.io/api/v1/search?q=${encodeURIComponent(query)}&token=${API_KEY}`
+    );
+
+    if (!res.data.result || res.data.result.length === 0) {
+      return null;
+    }
+
+    // best match
+    return res.data.result[0].symbol;
+
+  } catch (err) {
+    console.error("Ticker search failed");
+    return null;
+  }
+}
+
+// --------------------------------------------------
+// GET QUOTE
+// --------------------------------------------------
 export async function getQuote(ticker) {
   try {
     const res = await axios.get(
@@ -34,6 +59,9 @@ export async function getQuote(ticker) {
   }
 }
 
+// --------------------------------------------------
+// GET NEWS
+// --------------------------------------------------
 export async function getNews(ticker) {
   try {
     const today = new Date();
@@ -65,6 +93,9 @@ export async function getNews(ticker) {
   }
 }
 
+// --------------------------------------------------
+// MARKET CONTEXT (SPY + QQQ)
+// --------------------------------------------------
 export async function getMarketContext() {
   try {
     const spy = await axios.get(

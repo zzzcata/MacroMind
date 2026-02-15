@@ -1,6 +1,11 @@
 import express from "express";
 import cors from "cors";
-import { getQuote, getNews, getMarketContext } from "./finnhub.js";
+import {
+  getQuote,
+  getNews,
+  getMarketContext,
+  searchTicker
+} from "./finnhub.js";
 import { explainMove } from "./ai.js";
 import { buildReasoningContext } from "./reasoning.js";
 import { buildEvidence } from "./evidence.js";
@@ -9,34 +14,62 @@ import { getCached, setCached } from "./cache.js";
 const app = express();
 app.use(cors());
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Health check
+// -----------------------------
+// HEALTH CHECK
+// -----------------------------
 app.get("/", (req, res) => {
   res.send("MacroMind API running");
 });
 
-// Analyze endpoint
+// -----------------------------
+// ANALYZE ENDPOINT
+// -----------------------------
 app.get("/analyze", async (req, res) => {
   try {
-    const tickerRaw = req.query.ticker;
+    const input = req.query.ticker;
 
-    if (!tickerRaw) {
+    if (!input) {
       return res.status(400).json({
         error: "Missing ticker",
-        message: "Use /analyze?ticker=AAPL"
+        message: "Use /analyze?ticker=AAPL or company name"
       });
     }
 
-    const ticker = tickerRaw.toUpperCase().trim();
+    let ticker = input.toUpperCase().trim();
 
+    // -----------------------------------------
+    // IF NOT TICKER FORMAT → SEARCH COMPANY NAME
+    // -----------------------------------------
     if (!/^[A-Z]{1,5}(\.[A-Z]{1,2})?$/.test(ticker)) {
-      return res.status(400).json({
-        error: "Invalid ticker format",
-        message: "Ticker must be letters only (e.g. AAPL, MSFT)"
-      });
+      console.log(`[SEARCH] resolving name: ${input}`);
+
+      try {
+        const resolved = await searchTicker(input);
+
+        if (!resolved) {
+          return res.status(404).json({
+            error: "Symbol not found",
+            message: "Could not resolve company name"
+          });
+        }
+
+        ticker = resolved;
+        console.log(`[RESOLVED] ${input} → ${ticker}`);
+      } catch (e) {
+        console.error("[SEARCH ERROR]", e.message);
+
+        return res.status(503).json({
+          error: "Search failed",
+          message: "Ticker resolution unavailable"
+        });
+      }
     }
 
+    // -----------------------------------------
+    // CACHE
+    // -----------------------------------------
     const cacheKey = `analysis:${ticker}`;
     const cached = getCached(cacheKey);
 
@@ -47,7 +80,9 @@ app.get("/analyze", async (req, res) => {
 
     console.log(`[FETCH] ${ticker}`);
 
+    // -----------------------------------------
     // FETCH DATA
+    // -----------------------------------------
     let quote, news, context;
 
     try {
@@ -59,7 +94,7 @@ app.get("/analyze", async (req, res) => {
 
       return res.status(503).json({
         error: "Market data unavailable",
-        message: "Upstream API failed or rate-limited"
+        message: "Finnhub rate limit or API failure"
       });
     }
 
@@ -72,6 +107,9 @@ app.get("/analyze", async (req, res) => {
 
     const visibleNews = (news || []).slice(0, 5);
 
+    // -----------------------------------------
+    // REASONING + EVIDENCE
+    // -----------------------------------------
     const reasoning = buildReasoningContext(
       ticker,
       quote,
@@ -81,6 +119,9 @@ app.get("/analyze", async (req, res) => {
 
     const evidence = buildEvidence(quote, context, visibleNews);
 
+    // -----------------------------------------
+    // AI ANALYSIS
+    // -----------------------------------------
     let aiResult;
 
     try {
@@ -97,10 +138,13 @@ app.get("/analyze", async (req, res) => {
 
       return res.status(503).json({
         error: "AI analysis failed",
-        message: "LLM unavailable or rate-limited"
+        message: "OpenAI unavailable or rate-limited"
       });
     }
 
+    // -----------------------------------------
+    // FINAL OUTPUT
+    // -----------------------------------------
     const output = {
       request: {
         ticker,
@@ -137,6 +181,7 @@ app.get("/analyze", async (req, res) => {
       }
     };
 
+    // SAVE CACHE
     setCached(cacheKey, output);
 
     console.log(`[OK] ${ticker} analyzed`);
@@ -152,6 +197,7 @@ app.get("/analyze", async (req, res) => {
   }
 });
 
+// -----------------------------
 app.listen(PORT, () => {
   console.log(`MacroMind API running on http://localhost:${PORT}`);
 });
