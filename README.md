@@ -33,6 +33,8 @@ Finnhub API (market data + news)
 OpenAI API  
 dotenv  
 File-based caching  
+Netlify
+Render
 
 ## System architecture
 
