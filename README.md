@@ -6,6 +6,7 @@ Enter a stock ticker and receive a structured explanation of why the stock moved
 
 Live demo:
 https://macromind-api-3edn.onrender.com/analyze?ticker=AAPL
+macro-mind.netlify.app/
 
 ## Features
 
