@@ -34,13 +34,19 @@ OpenAI API
 dotenv  
 File-based caching  
 
-## Architecture
+## System architecture
 
-Hybrid intelligence system:
+MacroMind is designed as a hybrid intelligence system:
 
-Deterministic signals → Evidence layer → LLM reasoning → Structured output
+1. Market data ingestion (price + news)
+2. Deterministic signal detection
+3. Evidence scoring layer
+4. AI reasoning constrained by data
+5. Structured JSON output
+6. 5-minute caching layer
+7. Deployable API endpoint
 
-This avoids “black box AI” and ensures explanations are grounded in data.
+This approach avoids black-box AI outputs and ensures explanations remain grounded in verifiable inputs.
 
 ## Future ideas
 
