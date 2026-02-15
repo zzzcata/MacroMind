@@ -2,14 +2,25 @@ import { getQuote, getNews, getMarketContext } from "./finnhub.js";
 import { explainMove } from "./ai.js";
 import { buildReasoningContext } from "./reasoning.js";
 import { buildEvidence } from "./evidence.js";
+import { getCached, setCached } from "./cache.js";
 
 const ticker = process.argv[2] || "AAPL";
+const cacheKey = `analysis:${ticker}`;
 
 async function run() {
   try {
     console.log("\n=== MacroMind ===\n");
     console.log("Analyzing:", ticker);
 
+    // CHECK CACHE FIRST
+    const cached = getCached(cacheKey);
+    if (cached) {
+      console.log("\nReturning cached result (5 min cache)\n");
+      console.log(JSON.stringify(cached, null, 2));
+      return;
+    }
+
+    // FETCH DATA
     const quote = await getQuote(ticker);
     const news = await getNews(ticker);
     const context = await getMarketContext();
@@ -35,7 +46,7 @@ async function run() {
       visibleNews
     );
 
-    // new evidence layer
+    // evidence layer
     const evidence = buildEvidence(quote, context, visibleNews);
 
     console.log("\nGenerating structured analysis...\n");
@@ -73,6 +84,7 @@ async function run() {
 
       signals: reasoning,
       evidence: evidence,
+
       news: visibleNews.map((n, i) => ({
         id: `news:${i + 1}`,
         title: n.title,
@@ -89,6 +101,9 @@ async function run() {
         architecture: "hybrid-intelligence"
       }
     };
+
+    // SAVE TO CACHE
+    setCached(cacheKey, output);
 
     console.log(JSON.stringify(output, null, 2));
 

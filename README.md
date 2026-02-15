@@ -1,63 +1,27 @@
-# MacroMind — AI Market Move Explainer
+# MacroMind
 
-MacroMind is a small AI-powered analysis engine that explains daily stock price movements using structured market data, news, and deterministic reasoning.
+AI-powered market move explainer.
 
-This project demonstrates how to design an AI product that is:
-- grounded in real data
-- transparent in reasoning
-- explicit about uncertainty
-- structured for API use
+Enter a stock ticker and receive a structured explanation of why the stock moved based on price data, market context, and recent news.
 
-## What it does
+## Features
 
-Input:
-Ticker (e.g. AAPL)
+- Real-time stock data (price, % move, volume context)
+- Market context (SPY, QQQ comparison)
+- News ingestion and filtering
+- Deterministic reasoning engine (pre-AI classification)
+- Evidence scoring layer
+- Structured AI-generated explanation
+- 5-minute caching to reduce API cost
+- JSON output for transparency and auditability
 
-Output:
-Structured JSON containing:
-- market data
-- macro context
-- evidence scoring
-- AI interpretation
-- confidence + uncertainty
-
-The system combines deterministic logic with LLM interpretation to avoid narrative hallucination.
-
-## Architecture
-
-Flow:
-
-Finnhub API →  
-Deterministic reasoning layer →  
-Evidence scoring engine →  
-LLM interpretation (OpenAI) →  
-Structured JSON output
-
-Key idea:
-The AI does not invent explanations.  
-It interprets only provided evidence.
-
-## Why this project exists
-
-Most AI demos generate narratives.
-
-MacroMind attempts something different:
-An evidence-based explanation engine that knows when it does NOT know.
-
-Focus:
-- hybrid intelligence (rules + LLM)
-- structured outputs
-- explicit confidence handling
-- API-ready design
-
-## Example usage
-
-Run locally:
+## Run locally
 
 node src/main.js AAPL
 
-Output:
-Structured JSON analysis explaining the move.
+## Output
+
+Structured JSON analysis explaining likely drivers behind the move.
 
 ## Tech stack
 
@@ -65,16 +29,25 @@ Node.js
 Finnhub API (market data + news)  
 OpenAI API  
 dotenv  
+File-based caching  
 
-## Future ideas (not implemented)
+## Architecture
+
+Hybrid intelligence system:
+
+Deterministic signals → Evidence layer → LLM reasoning → Structured output
+
+This avoids “black box AI” and ensures explanations are grounded in data.
+
+## Future ideas
 
 - API endpoint deployment
 - daily market brief
-- portfolio tracking
+- portfolio tracker
 - macro regime detection
 - multi-stock comparison
-- UI dashboard
+- simple UI dashboard
 
 ## Author
 
-Catalina Pandrea exploring AI-native product design and market intelligence tools.
+zzzCata exploring AI-native product design and market intelligence systems.
