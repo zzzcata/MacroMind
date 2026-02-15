@@ -16,11 +16,21 @@ app.get("/", (req, res) => {
 // Analyze endpoint
 app.get("/analyze", async (req, res) => {
   try {
-    const ticker = req.query.ticker;
+    const tickerRaw = req.query.ticker;
 
-    if (!ticker) {
+    if (!tickerRaw) {
       return res.status(400).json({
-        error: "Missing ticker. Use /analyze?ticker=AAPL"
+        error: "Missing ticker",
+        message: "Use /analyze?ticker=AAPL"
+      });
+    }
+
+    const ticker = tickerRaw.toUpperCase().trim();
+
+    if (!/^[A-Z]{1,5}(\.[A-Z]{1,2})?$/.test(ticker)) {
+      return res.status(400).json({
+        error: "Invalid ticker format",
+        message: "Ticker must be letters only (e.g. AAPL, MSFT)"
       });
     }
 
@@ -28,17 +38,36 @@ app.get("/analyze", async (req, res) => {
     const cached = getCached(cacheKey);
 
     if (cached) {
-      console.log("Returning cached result");
+      console.log(`[CACHE HIT] ${ticker}`);
       return res.json(cached);
     }
 
-    console.log("Fetching fresh data for", ticker);
+    console.log(`[FETCH] ${ticker}`);
 
-    const quote = await getQuote(ticker);
-    const news = await getNews(ticker);
-    const context = await getMarketContext();
+    // FETCH DATA
+    let quote, news, context;
 
-    const visibleNews = news.slice(0, 5);
+    try {
+      quote = await getQuote(ticker);
+      news = await getNews(ticker);
+      context = await getMarketContext();
+    } catch (apiErr) {
+      console.error("[DATA API ERROR]", apiErr.message);
+
+      return res.status(503).json({
+        error: "Market data unavailable",
+        message: "Upstream API failed or rate-limited"
+      });
+    }
+
+    if (!quote || !quote.current) {
+      return res.status(404).json({
+        error: "Ticker not found",
+        message: `No market data for ${ticker}`
+      });
+    }
+
+    const visibleNews = (news || []).slice(0, 5);
 
     const reasoning = buildReasoningContext(
       ticker,
@@ -49,14 +78,25 @@ app.get("/analyze", async (req, res) => {
 
     const evidence = buildEvidence(quote, context, visibleNews);
 
-    const aiResult = await explainMove(
-      ticker,
-      quote,
-      visibleNews,
-      context,
-      reasoning,
-      evidence
-    );
+    let aiResult;
+
+    try {
+      aiResult = await explainMove(
+        ticker,
+        quote,
+        visibleNews,
+        context,
+        reasoning,
+        evidence
+      );
+    } catch (aiErr) {
+      console.error("[AI ERROR]", aiErr.message);
+
+      return res.status(503).json({
+        error: "AI analysis failed",
+        message: "LLM unavailable or rate-limited"
+      });
+    }
 
     const output = {
       request: {
@@ -78,7 +118,7 @@ app.get("/analyze", async (req, res) => {
         }
       },
       signals: reasoning,
-      evidence: evidence,
+      evidence,
       news: visibleNews.map((n, i) => ({
         id: `news:${i + 1}`,
         title: n.title,
@@ -96,14 +136,15 @@ app.get("/analyze", async (req, res) => {
 
     setCached(cacheKey, output);
 
+    console.log(`[OK] ${ticker} analyzed`);
     res.json(output);
 
   } catch (err) {
-    console.error("API error:", err.message);
+    console.error("[FATAL]", err);
 
     res.status(500).json({
-      error: "Analysis failed",
-      message: err.message
+      error: "Internal server error",
+      message: "Unexpected failure"
     });
   }
 });

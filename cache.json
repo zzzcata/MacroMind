@@ -4,7 +4,7 @@
       "request": {
         "ticker": "NVDA",
         "timeframe": "1d",
-        "generated_at": "2026-02-15T12:51:50.754Z"
+        "generated_at": "2026-02-15T13:56:20.194Z"
       },
       "facts": {
         "price": 182.81,
@@ -77,22 +77,24 @@
       ],
       "interpretation": {
         "primary_driver": "company",
-        "summary": "Nvidia's stock has experienced a notable decline of 2.21%, moving against the broader market trends indicated by SPY and QQQ. The evidence suggests a mixed outlook, with moderate news strength but weak evidence overall. The headlines do not provide strong causal links to the stock's movement, leading to uncertainty in the analysis.",
+        "summary": "Nvidia's stock has experienced a notable decline of 2.21%, contrasting with slight gains in broader indices like SPY and QQQ. The move is significant, yet the evidence supporting a clear causal relationship is weak, with mixed headlines that do not directly address the stock's performance. The market alignment is against Nvidia, indicating potential concerns among investors despite moderate news activity.",
         "drivers": [
           {
             "label": "Market Sentiment",
-            "type": "macro",
+            "type": "company",
             "evidence": [
+              "news:2",
               "ctx:spy",
               "ctx:qqq"
             ],
             "strength": "medium"
           },
           {
-            "label": "Company-Specific News",
-            "type": "company",
+            "label": "General Market Trends",
+            "type": "macro",
             "evidence": [
-              "news:2"
+              "ctx:spy",
+              "ctx:qqq"
             ],
             "strength": "low"
           },
@@ -106,126 +108,7 @@
         "classification": "short-term",
         "confidence": {
           "level": "low",
-          "rationale": "Weak evidence strength and lack of clear causal headlines."
-        },
-        "missing_data": []
-      },
-      "meta": {
-        "model": "gpt-4o-mini",
-        "version": "MacroMind v1",
-        "architecture": "hybrid-intelligence"
-      }
-    },
-    "timestamp": 1771159910755
-  },
-  "analysis:AAPL": {
-    "data": {
-      "request": {
-        "ticker": "AAPL",
-        "timeframe": "1d",
-        "generated_at": "2026-02-15T13:00:39.880Z"
-      },
-      "facts": {
-        "price": 255.78,
-        "pct_change_1d": -2.2733,
-        "abs_change": -5.95,
-        "high": 262.23,
-        "low": 255.45,
-        "open": 262.01,
-        "prev_close": 261.73,
-        "market": {
-          "spy_pct": 0.0705,
-          "qqq_pct": 0.2131
-        }
-      },
-      "signals": {
-        "move": -2.2733,
-        "absMove": 2.2733,
-        "moveSize": "medium",
-        "spy": 0.0705,
-        "qqq": 0.2131,
-        "relativeVsQQQ": -2.4863999999999997,
-        "moveVsMarket": "against_market",
-        "newsCount": 5,
-        "newsStrength": "moderate",
-        "systemDriver": "company"
-      },
-      "evidence": {
-        "moveSignificance": "meaningful",
-        "marketAlignment": "against_market",
-        "headlineScore": 4,
-        "evidenceStrength": "strong",
-        "systemBias": "company"
-      },
-      "news": [
-        {
-          "id": "news:1",
-          "title": "Apple Goes Full Netflix: The 'Severance' Deal Reveals Its Next Big Bet",
-          "source": "Yahoo",
-          "published_at": "15/02/2026, 12:46:03",
-          "url": "https://finnhub.io/api/news?id=3c37c1f8934144c8735fa281df24db5f0c45e2b2cf47901ea83d7a2a8fd44900"
-        },
-        {
-          "id": "news:2",
-          "title": "Apple Scrutiny On News And Siri AI Delays Tests Investor Expectations",
-          "source": "Yahoo",
-          "published_at": "15/02/2026, 12:14:47",
-          "url": "https://finnhub.io/api/news?id=2d82bc02871912d783365be1651d77e965e4bea075375fdc53addf0580177073"
-        },
-        {
-          "id": "news:3",
-          "title": "PayPal stock: can it regain lost share or has the ship sailed?",
-          "source": "Yahoo",
-          "published_at": "15/02/2026, 11:00:02",
-          "url": "https://finnhub.io/api/news?id=ee0eed88354a396521973315a11fc849abab3e5f0ac387d0715ad42b0e86fc27"
-        },
-        {
-          "id": "news:4",
-          "title": "3 Cheap \"Magnificent Seven\" Stocks to Buy Hand Over Fist",
-          "source": "Yahoo",
-          "published_at": "15/02/2026, 06:20:00",
-          "url": "https://finnhub.io/api/news?id=e1436a54ce412728136a54df6f4a0e213667ef915f2af35cb9d9bf4bae8eace0"
-        },
-        {
-          "id": "news:5",
-          "title": "Apple CEO Tim Cook Receives Letter From FTC Chairman Over Alleged Political Bias In Apple News",
-          "source": "Yahoo",
-          "published_at": "15/02/2026, 03:31:32",
-          "url": "https://finnhub.io/api/news?id=18eb1cfe7162114482a05203c2aa257ed376c98d97e26a450af80316095dbafb"
-        }
-      ],
-      "interpretation": {
-        "primary_driver": "company",
-        "summary": "Apple's stock has declined by 2.27%, moving against the broader market trends. The significant drop is influenced by moderate news strength, including scrutiny over AI developments and a letter from the FTC chairman. While the headlines suggest potential challenges, the exact impact on stock performance remains uncertain. Overall, the evidence indicates a meaningful move with strong implications for the company's outlook.",
-        "drivers": [
-          {
-            "label": "Regulatory Scrutiny",
-            "type": "company",
-            "evidence": [
-              "news:2",
-              "news:5"
-            ],
-            "strength": "high"
-          },
-          {
-            "label": "Strategic Moves",
-            "type": "company",
-            "evidence": [
-              "news:1"
-            ],
-            "strength": "medium"
-          },
-          {
-            "label": "Unclear",
-            "type": "unclear",
-            "evidence": [],
-            "strength": "low"
-          }
-        ],
-        "classification": "short-term",
-        "confidence": {
-          "level": "medium",
-          "rationale": "While there are strong headlines indicating regulatory scrutiny, the overall impact on stock movement is not definitively causal."
+          "rationale": "Weak evidence and mixed headlines do not provide a clear causal link to the stock's movement."
         },
         "missing_data": []
       },
@@ -235,6 +118,6 @@
         "architecture": "hybrid-intelligence"
       }
     },
-    "timestamp": 1771160439880
+    "timestamp": 1771163780196
   }
 }
